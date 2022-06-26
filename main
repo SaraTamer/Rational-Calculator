@@ -1,0 +1,189 @@
+// FCAI – Programming 1 – 2022 - Assignment 2
+// Program Name: Rational Calculator .cpp
+// Program Description: It's calculating the input operation between two valid rational numbers.
+// Last Modification Date: 27/3/2022
+// Author1 and ID and Group: 2021 0286
+// Author2 and ID and Group: 2021 0140
+// Author3 and ID and Group: 2021 0155
+// Teaching Assistant: Eng/Nesma
+// Purpose: It's a rational number calculator.
+
+#include <iostream>
+#include <regex>
+#include <cstdlib>
+#include <string>
+using namespace std;
+
+// all functions in the program and global variables
+
+bool isValidRational(string) , isValidRational2(string str_rational2);
+void parse_rational1(string& str_rational ) , parse_rational2(string& str_rational );
+void adding() , subtracting() , multiplying() , dividing();
+void simplifying();
+string str_rational1 , str_rational2 ;
+int numerator1 = 0 , denominator1 = 1 , numerator2 = 0 , denominator2 = 1 ;
+int result_num ,  result_den , comFactor;
+char operation;
+
+
+int main()
+{
+// take input from the user and check for the validity of rationals and the operation
+    while (str_rational1 != "quit") {
+        cout << "Please enter a rational number operations (or quit):\n";
+        cin >> str_rational1 >> operation >> str_rational2;
+
+        if (isValidRational(str_rational1) && isValidRational2(str_rational2)){
+            parse_rational1(str_rational1);
+            parse_rational2(str_rational2);
+
+            if (operation == '+'){
+                adding();
+            }
+            else if (operation == '-' ){
+                subtracting();
+            }
+            else
+            if (operation == '*'){
+                multiplying();
+            }
+            else if (operation == '/'){
+                dividing();
+            }
+        }
+        else if (str_rational1 == "quit"){
+            break;
+        }
+        else
+            cout <<  "Its not a valid rational. \n";
+    }
+}
+//function to check the validity of the first rational number
+
+bool isValidRational(string str_rational1){
+    regex validRational1("[-+]?[0-9]+(/[1-9][0-9]*)?");
+    return regex_match(str_rational1 , validRational1);
+}
+
+//function to check the validity of the second rational number
+
+bool isValidRational2(string str_rational2){
+    regex validRational2("[-+]?[0-9]+(/[1-9][0-9]*)?");
+    return regex_match(str_rational2 , validRational2);
+}
+//function to extract first numerator and first denominator
+
+void parse_rational1(string& str_rational1 ){
+
+//    check if the user input the denominator or its equals to 1 (by default)
+    int pos_over = signed (str_rational1.find('/'));
+    if (pos_over == -1 ){
+        denominator1 = 1;
+    }
+    else {
+        string temp = str_rational1.substr(0 ,  pos_over);
+        string xx = str_rational1.substr(pos_over + 1 , str_rational1.back());
+        stringstream zz;
+        zz << xx;
+        zz >> denominator1;
+    }
+//    extract the first numerator and convert it into integer
+    string temp = str_rational1.substr(0 ,  pos_over);
+    stringstream ss;
+    ss << temp;
+    ss >> numerator1;
+
+}
+//function to extract the second numerator and second denominator
+void parse_rational2(string& str_rational2 ){
+
+    //    check if the user input the denominator or its equals to 1 (by default)
+
+    int pos_over = signed (str_rational2.find('/'));
+    if (pos_over == -1 ){
+        denominator2 = 1;
+    }
+//    extract the second denominator and convert it into integer
+    else {
+        string temp = str_rational2.substr(0 ,  pos_over);
+        string xx = str_rational2.substr(pos_over + 1 , str_rational2.back());
+        stringstream zz;
+        zz << xx;
+        zz >> denominator2;
+    }
+    //    extract the second numerator and convert it into integer
+
+    string temp = str_rational2.substr(0 , pos_over);
+
+    stringstream ss;
+    ss << temp;
+    ss >> numerator2;
+}
+//function to multiply the inputs
+void multiplying(){
+    result_num = numerator1 * numerator2,  result_den = denominator1 * denominator2;
+    simplifying();
+}
+//function to add the inputs
+
+void adding(){
+//check if the two denominators are equal
+    if (denominator1 == denominator2){
+        result_den = denominator1;
+        result_num = numerator1 + numerator2;
+        simplifying();
+    }
+//    otherwise, take the common denominator
+    else {
+        result_den = denominator1 * denominator2;
+        result_num = numerator1 * denominator2 + numerator2 * denominator1;
+        simplifying();
+    }
+}
+//function to subtract the inputs
+
+void subtracting(){
+//check if the two denominators are equal
+    if (denominator1 == denominator2){
+        result_den = denominator1;
+        result_num = numerator1 - numerator2;
+        simplifying();
+    }
+//    otherwise, take the common denominator
+    else {
+        result_den = denominator1 * denominator2;
+        result_num = (numerator1 * denominator2) - (numerator2 * denominator1);
+        simplifying();
+    }
+}
+//function to dividing the inputs
+
+void dividing(){
+//    take the multiplicative inverse of the second rational
+    int x = numerator2 ;
+    numerator2 = denominator2;
+    denominator2 = x;
+    result_num = numerator1 * numerator2,  result_den = denominator1 * denominator2;
+    simplifying();
+}
+//function to simplify the result before print it
+
+void simplifying(){
+//    get the common factor and simplify each of numerator and denominator
+    comFactor = __gcd( result_num , result_den);
+    result_num = result_num / comFactor;
+    result_den = result_den / comFactor;
+
+//    to put the negative sign with the numerator
+    if (result_den < 0){
+       result_den = abs(result_den);
+       result_num = - result_num;
+    }
+//    if the result is a whole number then, print it only
+    if (result_den == 1){
+        cout << result_num << endl;
+    }
+    else{
+        cout << result_num << '/' << result_den << endl;
+    }
+}
